@@ -162,6 +162,10 @@ data:
             pattern: '^[A-Za-z0-9_.|^*+?()\[\]-]+$'
             errorData: _("Invalid characters.")
     buttons:
+      - text: _("Change language")
+        execute:
+          type: url
+          url: "/dashboard"
       - text: _("Open simulator")
         execute:
           type: url

@@ -19,5 +19,6 @@
     "Network interface filter":  "網路介面過濾",
     "Regular expression selecting the network interfaces shown on the LCD, e.g. ^eth|^enp|^bond.":  "以規則運算式選擇要顯示在 LCD 的網路介面，例如 ^eth|^enp|^bond。",
     "Invalid characters.":  "含有無效字元。",
-    "Open simulator":  "開啟模擬畫面"
+    "Open simulator":  "開啟模擬畫面",
+    "Change language":  "切換語言（右上角使用者選單 > Language）"
 }
