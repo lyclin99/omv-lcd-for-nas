@@ -24,6 +24,7 @@
   .small.warn:hover { background: #b83232; }
   .status { margin-top: 16px; font-size: 14px; color: #9aa6bb; min-height: 20px; }
   .err { color: #ff8a8a; }
+  .langsel { background: #394152; color: #cfd6e4; border: 0; border-radius: 8px; padding: 6px 10px; font-size: 14px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -34,10 +35,16 @@
     <button id="down" title="Down (&#8595;)">&#9660;</button>
   </div>
   <div class="btns">
-    <button id="refresh" class="small">Reload settings</button>
-    <button id="testAlert" class="small">Simulate disk alert</button>
+    <button id="refresh" class="small"></button>
+    <button id="testAlert" class="small"></button>
   </div>
   <div id="status" class="status"></div>
+  <div class="btns" style="margin-top:14px">
+    <select id="lang" class="langsel" aria-label="Language">
+      <option value="zh-TW">繁體中文</option>
+      <option value="en">English</option>
+    </select>
+  </div>
 </div>
 <script>
 (function () {
@@ -47,6 +54,47 @@
   var lcd = document.getElementById("lcd");
   var statusEl = document.getElementById("status");
   var testBtn = document.getElementById("testAlert");
+  var refreshBtn = document.getElementById("refresh");
+  var langSel = document.getElementById("lang");
+
+  var I18N = {
+    "zh-TW": {
+      title: "OMV LCD for NAS 模擬器",
+      reload: "重新載入設定",
+      simulate: "模擬硬碟告警",
+      clear: "清除測試告警",
+      page: "第 ", of: " / ", pageEnd: " 頁",
+      alertOn: " [硬碟告警 - 恆亮]",
+      screenOff: "（螢幕已關閉，請按任意鍵）",
+      loadFail: "無法載入資料：",
+      loginHint: "（請先在此瀏覽器登入 OMV）",
+      up: "上一頁 (↑)", down: "下一頁 (↓)"
+    },
+    "en": {
+      title: "OMV LCD for NAS Simulator",
+      reload: "Reload settings",
+      simulate: "Simulate disk alert",
+      clear: "Clear test alert",
+      page: "Page ", of: " / ", pageEnd: "",
+      alertOn: " [DISK ALERT - Always On]",
+      screenOff: " (screen off, press a button)",
+      loadFail: "Cannot load data: ",
+      loginHint: " (log in to OMV in this browser first)",
+      up: "Up (↑)", down: "Down (↓)"
+    }
+  };
+  var lang = null;
+  try { lang = localStorage.getItem("qnaplcd.lang"); } catch (e) {}
+  if (!I18N[lang]) { lang = (navigator.language || "").toLowerCase().indexOf("zh") === 0 ? "zh-TW" : "en"; }
+  function T() { return I18N[lang]; }
+  function applyStatic() {
+    document.title = T().title;
+    document.documentElement.lang = lang === "zh-TW" ? "zh-Hant" : "en";
+    refreshBtn.textContent = T().reload;
+    document.getElementById("up").title = T().up;
+    document.getElementById("down").title = T().down;
+    langSel.value = lang;
+  }
 
   function rpc(service, method, params) {
     return fetch("/rpc.php", {
@@ -75,12 +123,12 @@
     var lines = !page ? ["", ""] : (page.clock ? clockLines() : (page.lines || page));
     lcd.textContent = pad(lines[0]) + "\n" + pad(lines[1]);
     lcd.className = "lcd " + (!on ? "off" : (isAlertPage ? "alert" : "on"));
-    testBtn.textContent = state.test_alert ? "Clear test alert" : "Simulate disk alert";
+    testBtn.textContent = state.test_alert ? T().clear : T().simulate;
     testBtn.className = "small" + (state.test_alert ? " warn" : "");
     statusEl.className = "status" + (state.has_alert ? " err" : "");
     statusEl.textContent = state.pages.length
-      ? "Page " + (idx + 1) + " / " + state.pages.length
-        + (state.has_alert ? " [DISK ALERT - Always On]" : (on ? "" : " (screen off, press a button)"))
+      ? T().page + (idx + 1) + T().of + state.pages.length + T().pageEnd
+        + (state.has_alert ? T().alertOn : (on ? "" : T().screenOff))
       : "";
   }
 
@@ -116,7 +164,7 @@
       }
     }).catch(function (e) {
       statusEl.className = "status err";
-      statusEl.textContent = "Cannot load data: " + e.message + " (log in to OMV in this browser first)";
+      statusEl.textContent = T().loadFail + e.message + T().loginHint;
       throw e;
     });
   }
@@ -130,6 +178,13 @@
     load().then(render, function () {});
   }
 
+  langSel.onchange = function () {
+    lang = langSel.value;
+    try { localStorage.setItem("qnaplcd.lang", lang); } catch (e) {}
+    applyStatic();
+    render();
+  };
+  applyStatic();
   document.getElementById("up").onclick = function () { press(-1); };
   document.getElementById("down").onclick = function () { press(1); };
   document.getElementById("refresh").onclick = function () {
