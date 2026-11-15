@@ -3,6 +3,8 @@
     "Enabled":  "啟用",
     "Screen timeout":  "螢幕逾時",
     "Seconds of inactivity before the LCD turns off. Set to 0 to keep it always on.":  "閒置多少秒後關閉 LCD 螢幕。設為 0 表示永遠亮著。",
+    "Disk failure alert (S.M.A.R.T. & RAID)":  "硬碟損壞告警（S.M.A.R.T. 與 RAID）",
+    "Automatically wake the LCD, keep it on, and pin the alert to the first page when a S.M.A.R.T. error, bad sector, or degraded RAID array is detected.":  "偵測到 S.M.A.R.T. 異常、壞軌或 RAID 降級時，自動喚醒 LCD 並恆亮置頂顯示告警。",
     "Displayed items (lower position number is shown first)":  "顯示項目（位置數字越小越先顯示）",
     "Custom text":  "自訂文字",
     "Position":  "位置",

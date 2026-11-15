@@ -3,10 +3,11 @@
 OpenMediaVault 8 web UI plugin to configure the front LCD of QNAP NAS units (tested on TS-459 Pro II), built on [mpeirone/QnapLcdInfo](https://github.com/mpeirone/QnapLcdInfo).
 
 ## Features
-- Services > OMV LCD for NAS settings page (enable, screen timeout, network filter)
+- Services > OMV LCD for NAS settings page (enable, screen timeout, disk failure alert, network filter)
+- Disk failure alert (S.M.A.R.T. health/bad sectors & degraded MD RAID detection): automatically wakes the LCD, keeps the backlight on, and pins the alert page to the first page
 - Pages: custom text (Chinese/ASCII input; LCD shows non-ASCII as `?`), hostname/load, date & time (`yyyy/MM/dd` + `HH:mm:ss`), last boot, memory/swap, disk usage, network
 - Per-page show checkbox and adjustable display position
-- Browser LCD simulator at `http://<omv>/qnaplcd/` (login to OMV first; ▲/▼ buttons or arrow keys)
+- Browser LCD simulator at `http://<omv>/qnaplcd/` (login to OMV first; ▲/▼ buttons or arrow keys, red alert backlight, and one-click alert test)
 - Traditional Chinese UI strings
 
 ## Install / remove

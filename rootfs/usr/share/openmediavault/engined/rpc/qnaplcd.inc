@@ -14,6 +14,7 @@ class OMVRpcServiceQnapLcd extends \OMV\Rpc\ServiceAbstract
         $this->registerMethod("get");
         $this->registerMethod("set");
         $this->registerMethod("getPreview");
+        $this->registerMethod("setTestAlert");
     }
 
     public function get($params, $context)
@@ -41,7 +42,8 @@ class OMVRpcServiceQnapLcd extends \OMV\Rpc\ServiceAbstract
         $env = [
             "LCD_BLANK_TIMEOUT" => (string)$o->get("blanktimeout"),
             "LCD_NETWORK_REGEX" => (string)$o->get("networkregex"),
-            "LCD_CUSTOM_TEXT" => (string)$o->get("customtext")
+            "LCD_CUSTOM_TEXT" => (string)$o->get("customtext"),
+            "LCD_SHOW_DISKALERT" => $o->get("showdiskalert") ? "1" : "0"
         ];
         foreach (["host", "boot", "memory", "disks", "network", "clock", "custom"] as $k) {
             $env["LCD_SHOW_" . strtoupper($k)] = $o->get("show" . $k) ? "1" : "0";
@@ -58,5 +60,21 @@ class OMVRpcServiceQnapLcd extends \OMV\Rpc\ServiceAbstract
             throw new \OMV\Exception("Failed to generate the LCD preview.");
         }
         return $data;
+    }
+
+    public function setTestAlert($params, $context)
+    {
+        $this->validateMethodContext($context, ["role" => OMV_ROLE_ADMINISTRATOR]);
+        $file = "/run/lcdinfo_test_alert";
+        $enable = is_array($params) && !empty($params["enable"]);
+        if ($enable) {
+            $msg = (is_array($params) && !empty($params["message"]) && is_string($params["message"]))
+                ? $params["message"]
+                : "! DISK ALERT !\nsdb BAD SEC:8\n";
+            file_put_contents($file, $msg);
+        } else {
+            @unlink($file);
+        }
+        return ["test_alert" => file_exists($file)];
     }
 }

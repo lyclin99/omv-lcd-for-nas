@@ -10,15 +10,18 @@
   .box { background: #2b313c; border-radius: 14px; padding: 28px 32px; box-shadow: 0 10px 30px #0008; text-align: center; }
   .lcd { display: inline-block; padding: 14px 18px; border: 4px solid #0d0f14; border-radius: 6px;
          font-family: "Courier New", Consolas, monospace; font-size: 30px; line-height: 1.35; letter-spacing: 2px;
-         text-align: left; white-space: pre; transition: background .2s, color .2s; }
-  .lcd.on  { background: #3f7be0; color: #f2f8ff; text-shadow: 0 0 6px #9cc4ff; }
-  .lcd.off { background: #11151c; color: #11151c; text-shadow: none; }
+         text-align: left; white-space: pre; transition: background .2s, color .2s, box-shadow .2s; }
+  .lcd.on    { background: #3f7be0; color: #f2f8ff; text-shadow: 0 0 6px #9cc4ff; }
+  .lcd.alert { background: #c53030; color: #fff5f5; text-shadow: 0 0 8px #feb2b2; box-shadow: 0 0 16px #e53e3e66; }
+  .lcd.off   { background: #11151c; color: #11151c; text-shadow: none; }
   .btns { margin-top: 22px; display: flex; gap: 18px; justify-content: center; }
   button { font-size: 22px; width: 90px; height: 54px; border-radius: 10px; border: 0; cursor: pointer;
            background: #4a5568; color: #fff; }
   button:hover { background: #5f6c83; }
   button:active { transform: translateY(2px); }
   .small { font-size: 14px; width: auto; height: auto; padding: 6px 12px; background: #394152; }
+  .small.warn { background: #9b2c2c; }
+  .small.warn:hover { background: #b83232; }
   .status { margin-top: 16px; font-size: 14px; color: #9aa6bb; min-height: 20px; }
   .err { color: #ff8a8a; }
 </style>
@@ -30,23 +33,27 @@
     <button id="up" title="Up (&#8593;)">&#9650;</button>
     <button id="down" title="Down (&#8595;)">&#9660;</button>
   </div>
-  <div class="btns"><button id="refresh" class="small">Reload settings</button></div>
+  <div class="btns">
+    <button id="refresh" class="small">Reload settings</button>
+    <button id="testAlert" class="small">Simulate disk alert</button>
+  </div>
   <div id="status" class="status"></div>
 </div>
 <script>
 (function () {
   var COLS = 16;
-  var state = { pages: [], timeout: 30, offset: 0, tz: 0 };
+  var state = { pages: [], timeout: 30, offset: 0, tz: 0, has_alert: false, test_alert: false };
   var idx = 0, on = true, blankTimer = null;
   var lcd = document.getElementById("lcd");
   var statusEl = document.getElementById("status");
+  var testBtn = document.getElementById("testAlert");
 
-  function rpc(service, method) {
+  function rpc(service, method, params) {
     return fetch("/rpc.php", {
       method: "POST",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ service: service, method: method, params: null, options: null })
+      body: JSON.stringify({ service: service, method: method, params: params || null, options: null })
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (j.error) { throw new Error(j.error.message || "RPC error"); }
       return j.response;
@@ -64,29 +71,49 @@
 
   function render() {
     var page = state.pages[idx];
-    var lines = !page ? ["", ""] : (page.clock ? clockLines() : page);
+    var isAlertPage = Boolean(page && page.alert);
+    var lines = !page ? ["", ""] : (page.clock ? clockLines() : (page.lines || page));
     lcd.textContent = pad(lines[0]) + "\n" + pad(lines[1]);
-    lcd.className = "lcd " + (on ? "on" : "off");
-    statusEl.className = "status";
+    lcd.className = "lcd " + (!on ? "off" : (isAlertPage ? "alert" : "on"));
+    testBtn.textContent = state.test_alert ? "Clear test alert" : "Simulate disk alert";
+    testBtn.className = "small" + (state.test_alert ? " warn" : "");
+    statusEl.className = "status" + (state.has_alert ? " err" : "");
     statusEl.textContent = state.pages.length
-      ? "Page " + (idx + 1) + " / " + state.pages.length + (on ? "" : " (screen off, press a button)")
+      ? "Page " + (idx + 1) + " / " + state.pages.length
+        + (state.has_alert ? " [DISK ALERT - Always On]" : (on ? "" : " (screen off, press a button)"))
       : "";
   }
 
   function armBlank() {
     clearTimeout(blankTimer);
+    if (state.has_alert) {
+      on = true;
+      if (state.timeout > 0) {
+        blankTimer = setTimeout(function () { idx = 0; on = true; render(); }, state.timeout * 1000);
+      }
+      return;
+    }
     if (state.timeout > 0) {
       blankTimer = setTimeout(function () { on = false; render(); }, state.timeout * 1000);
     }
   }
 
   function load() {
+    var hadAlert = state.has_alert;
     return rpc("QnapLcd", "getPreview").then(function (d) {
       state.pages = d.pages;
       state.timeout = d.timeout;
+      state.has_alert = Boolean(d.has_alert);
+      state.test_alert = Boolean(d.test_alert);
       state.offset = d.servertime * 1000 - Date.now();
       state.tz = d.tzoffset;
-      if (idx >= state.pages.length) { idx = 0; }
+      if (state.has_alert && (!hadAlert || !on)) {
+        idx = 0;
+        on = true;
+        armBlank();
+      } else if (idx >= state.pages.length) {
+        idx = 0;
+      }
     }).catch(function (e) {
       statusEl.className = "status err";
       statusEl.textContent = "Cannot load data: " + e.message + " (log in to OMV in this browser first)";
@@ -109,12 +136,19 @@
     idx = 0; on = true;
     load().then(function () { render(); armBlank(); }, function () {});
   };
+  testBtn.onclick = function () {
+    rpc("QnapLcd", "setTestAlert", { enable: !state.test_alert }).then(function () {
+      idx = 0; on = true;
+      return load();
+    }).then(function () { render(); armBlank(); }, function () {});
+  };
   document.addEventListener("keydown", function (e) {
     if (e.key === "ArrowUp") { e.preventDefault(); press(-1); }
     if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); press(1); }
   });
 
   setInterval(function () { if (on && state.pages[idx] && state.pages[idx].clock) { render(); } }, 1000);
+  setInterval(function () { load().then(render, function () {}); }, 4000);
   load().then(function () { render(); armBlank(); }, function () {});
 })();
 </script>

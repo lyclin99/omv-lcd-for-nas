@@ -9,7 +9,7 @@ if ! omv_config_exists "/config/services/qnaplcd"; then
 	omv_config_add_key "/config/services/qnaplcd" "blanktimeout" "30"
 	omv_config_add_key "/config/services/qnaplcd" "networkregex" "^eth|^enp|^bond"
 fi
-for k in showhost showboot showmemory showdisks shownetwork showclock showcustom; do
+for k in showdiskalert showhost showboot showmemory showdisks shownetwork showclock showcustom; do
 	if ! omv_config_exists "/config/services/qnaplcd/${k}"; then
 		omv_config_add_key "/config/services/qnaplcd" "${k}" "1"
 	fi

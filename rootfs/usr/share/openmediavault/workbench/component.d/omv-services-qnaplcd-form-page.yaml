@@ -24,6 +24,11 @@ data:
           min: 0
           max: 3600
           required: true
+      - type: checkbox
+        name: showdiskalert
+        label: _("Disk failure alert (S.M.A.R.T. & RAID)")
+        hint: _("Automatically wake the LCD, keep it on, and pin the alert to the first page when a S.M.A.R.T. error, bad sector, or degraded RAID array is detected.")
+        value: true
       - type: divider
         title: _("Displayed items (lower position number is shown first)")
       - type: container

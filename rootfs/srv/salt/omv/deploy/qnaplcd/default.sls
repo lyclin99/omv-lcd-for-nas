@@ -9,6 +9,7 @@ configure_lcdinfo_environment:
     - contents: |
         LCD_BLANK_TIMEOUT="{{ config.blanktimeout }}"
         LCD_NETWORK_REGEX="{{ config.networkregex }}"
+        LCD_SHOW_DISKALERT="{{ 1 if config.showdiskalert | to_bool else 0 }}"
         LCD_SHOW_HOST="{{ 1 if config.showhost | to_bool else 0 }}"
         LCD_SHOW_BOOT="{{ 1 if config.showboot | to_bool else 0 }}"
         LCD_SHOW_MEMORY="{{ 1 if config.showmemory | to_bool else 0 }}"
