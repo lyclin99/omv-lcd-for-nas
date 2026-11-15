@@ -1,0 +1,8 @@
+version: "1.0"
+type: route
+data:
+  url: "/services/qnaplcd"
+  title: _("OMV LCD for NAS")
+  editing: true
+  notificationTitle: _("Updated OMV LCD for NAS settings.")
+  component: omv-services-qnaplcd-form-page

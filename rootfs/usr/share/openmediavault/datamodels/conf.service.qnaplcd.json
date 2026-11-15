@@ -1,0 +1,102 @@
+{
+	"type": "config",
+	"id": "conf.service.qnaplcd",
+	"title": "QNAP LCD",
+	"queryinfo": {
+		"xpath": ".//services/qnaplcd",
+		"iterable": false
+	},
+	"properties": {
+		"enable": {
+			"type": "boolean",
+			"default": true
+		},
+		"blanktimeout": {
+			"type": "integer",
+			"minimum": 0,
+			"maximum": 3600,
+			"default": 30
+		},
+		"networkregex": {
+			"type": "string",
+			"pattern": "^[A-Za-z0-9_.|^*+?()\\[\\]-]+$",
+			"default": "^eth|^enp|^bond"
+		},
+		"showhost": {
+			"type": "boolean",
+			"default": true
+		},
+		"showboot": {
+			"type": "boolean",
+			"default": true
+		},
+		"showmemory": {
+			"type": "boolean",
+			"default": true
+		},
+		"showdisks": {
+			"type": "boolean",
+			"default": true
+		},
+		"shownetwork": {
+			"type": "boolean",
+			"default": true
+		},
+		"showclock": {
+			"type": "boolean",
+			"default": true
+		},
+		"showcustom": {
+			"type": "boolean",
+			"default": true
+		},
+		"customtext": {
+			"type": "string",
+			"maxLength": 120,
+			"pattern": "^[^\"\\\\$`\\r\\n]*$",
+			"default": ""
+		},
+		"ordercustom": {
+			"type": "integer",
+			"minimum": 1,
+			"maximum": 99,
+			"default": 1
+		},
+		"orderhost": {
+			"type": "integer",
+			"minimum": 1,
+			"maximum": 99,
+			"default": 2
+		},
+		"orderclock": {
+			"type": "integer",
+			"minimum": 1,
+			"maximum": 99,
+			"default": 3
+		},
+		"orderboot": {
+			"type": "integer",
+			"minimum": 1,
+			"maximum": 99,
+			"default": 4
+		},
+		"ordermemory": {
+			"type": "integer",
+			"minimum": 1,
+			"maximum": 99,
+			"default": 5
+		},
+		"orderdisks": {
+			"type": "integer",
+			"minimum": 1,
+			"maximum": 99,
+			"default": 6
+		},
+		"ordernetwork": {
+			"type": "integer",
+			"minimum": 1,
+			"maximum": 99,
+			"default": 7
+		}
+	}
+}

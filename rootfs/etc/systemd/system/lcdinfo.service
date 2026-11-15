@@ -1,0 +1,12 @@
+[Unit]
+Description=Qnap LCD Info Service
+After=syslog.target
+
+[Service]
+Type=simple
+Restart=on-failure
+EnvironmentFile=-/etc/default/lcdinfo
+ExecStart=/opt/QnapLcdInfo/venv/bin/python /opt/QnapLcdInfo/lcdInfo.py
+
+[Install]
+WantedBy=multi-user.target

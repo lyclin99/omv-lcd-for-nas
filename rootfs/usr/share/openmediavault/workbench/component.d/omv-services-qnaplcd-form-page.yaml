@@ -1,0 +1,168 @@
+version: "1.0"
+type: component
+data:
+  name: omv-services-qnaplcd-form-page
+  type: formPage
+  config:
+    request:
+      service: QnapLcd
+      get:
+        method: get
+      post:
+        method: set
+    fields:
+      - type: checkbox
+        name: enable
+        label: _("Enabled")
+        value: true
+      - type: numberInput
+        name: blanktimeout
+        label: _("Screen timeout")
+        hint: _("Seconds of inactivity before the LCD turns off. Set to 0 to keep it always on.")
+        value: 30
+        validators:
+          min: 0
+          max: 3600
+          required: true
+      - type: divider
+        title: _("Displayed items (lower position number is shown first)")
+      - type: container
+        fields:
+          - type: checkbox
+            name: showcustom
+            label: _("Custom text")
+            value: true
+          - type: numberInput
+            name: ordercustom
+            label: _("Position")
+            value: 1
+            validators:
+              min: 1
+              max: 99
+              required: true
+      - type: textInput
+        name: customtext
+        label: _("Custom text")
+        hint: _("Up to 32 characters (16 per line). The LCD cannot display Chinese characters; they are shown as ?. Leave empty to hide this page.")
+        value: ""
+        modifiers:
+          - type: disabled
+            constraint:
+              operator: falsy
+              arg0:
+                prop: showcustom
+        validators:
+          maxLength: 32
+          pattern:
+            pattern: '^[^"\\$`]*$'
+            errorData: _("Quotes, backslash, $ and backtick are not allowed.")
+      - type: container
+        fields:
+          - type: checkbox
+            name: showhost
+            label: _("Hostname and load")
+            value: true
+          - type: numberInput
+            name: orderhost
+            label: _("Position")
+            value: 2
+            validators:
+              min: 1
+              max: 99
+              required: true
+      - type: container
+        fields:
+          - type: checkbox
+            name: showclock
+            label: _("Date and time")
+            value: true
+          - type: numberInput
+            name: orderclock
+            label: _("Position")
+            value: 3
+            validators:
+              min: 1
+              max: 99
+              required: true
+      - type: container
+        fields:
+          - type: checkbox
+            name: showboot
+            label: _("Last boot time")
+            value: true
+          - type: numberInput
+            name: orderboot
+            label: _("Position")
+            value: 4
+            validators:
+              min: 1
+              max: 99
+              required: true
+      - type: container
+        fields:
+          - type: checkbox
+            name: showmemory
+            label: _("Memory and swap usage")
+            value: true
+          - type: numberInput
+            name: ordermemory
+            label: _("Position")
+            value: 5
+            validators:
+              min: 1
+              max: 99
+              required: true
+      - type: container
+        fields:
+          - type: checkbox
+            name: showdisks
+            label: _("Disk usage")
+            value: true
+          - type: numberInput
+            name: orderdisks
+            label: _("Position")
+            value: 6
+            validators:
+              min: 1
+              max: 99
+              required: true
+      - type: container
+        fields:
+          - type: checkbox
+            name: shownetwork
+            label: _("Network interfaces")
+            value: true
+          - type: numberInput
+            name: ordernetwork
+            label: _("Position")
+            value: 7
+            validators:
+              min: 1
+              max: 99
+              required: true
+      - type: textInput
+        name: networkregex
+        label: _("Network interface filter")
+        hint: _("Regular expression selecting the network interfaces shown on the LCD, e.g. ^eth|^enp|^bond.")
+        value: "^eth|^enp|^bond"
+        modifiers:
+          - type: disabled
+            constraint:
+              operator: falsy
+              arg0:
+                prop: shownetwork
+        validators:
+          required: true
+          pattern:
+            pattern: '^[A-Za-z0-9_.|^*+?()\[\]-]+$'
+            errorData: _("Invalid characters.")
+    buttons:
+      - text: _("Open simulator")
+        execute:
+          type: url
+          url: "/externalRedirect/{{ [location() | get('protocol'), '//', location() | get('host'), '/qnaplcd/'] | join | encodeuricomponent }}"
+      - template: cancel
+        execute:
+          type: url
+          url: "/services"
+      - template: submit

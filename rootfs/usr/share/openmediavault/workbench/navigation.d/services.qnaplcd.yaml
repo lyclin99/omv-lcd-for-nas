@@ -1,0 +1,7 @@
+version: "1.0"
+type: navigation-item
+data:
+  path: "services.qnaplcd"
+  text: _("OMV LCD for NAS")
+  icon: "mdi:monitor"
+  url: "/services/qnaplcd"

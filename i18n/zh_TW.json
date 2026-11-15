@@ -1,0 +1,21 @@
+{
+    "Updated OMV LCD for NAS settings.":  "已更新 OMV LCD for NAS 設定。",
+    "Enabled":  "啟用",
+    "Screen timeout":  "螢幕逾時",
+    "Seconds of inactivity before the LCD turns off. Set to 0 to keep it always on.":  "閒置多少秒後關閉 LCD 螢幕。設為 0 表示永遠亮著。",
+    "Displayed items (lower position number is shown first)":  "顯示項目（位置數字越小越先顯示）",
+    "Custom text":  "自訂文字",
+    "Position":  "位置",
+    "Up to 32 characters (16 per line). The LCD cannot display Chinese characters; they are shown as ?. Leave empty to hide this page.":  "最多 32 個字元（每行 16 個）。LCD 無法顯示中文字，會顯示為 ?。留空則不顯示此頁。",
+    "Quotes, backslash, $ and backtick are not allowed.":  "不允許使用引號、反斜線、$ 與反引號。",
+    "Hostname and load":  "主機名稱與負載",
+    "Date and time":  "日期與時間",
+    "Last boot time":  "上次開機時間",
+    "Memory and swap usage":  "記憶體與交換空間使用率",
+    "Disk usage":  "磁碟使用率",
+    "Network interfaces":  "網路介面",
+    "Network interface filter":  "網路介面過濾",
+    "Regular expression selecting the network interfaces shown on the LCD, e.g. ^eth|^enp|^bond.":  "以規則運算式選擇要顯示在 LCD 的網路介面，例如 ^eth|^enp|^bond。",
+    "Invalid characters.":  "含有無效字元。",
+    "Open simulator":  "開啟模擬畫面"
+}
