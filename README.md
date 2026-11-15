@@ -18,3 +18,6 @@ sudo ./install.sh      # ./uninstall.sh to remove
 Then tick **Enabled**, save and apply in the web UI.
 
 Notes: the zh_TW strings are merged into OMV's translation file and may need re-installing after OMV package updates.
+
+## License
+Copyright (C) 2026 lyclin99. Licensed under the GNU General Public License v3.0 or later (GPL-3.0-or-later); see [LICENSE](LICENSE). Based on [mpeirone/QnapLcdInfo](https://github.com/mpeirone/QnapLcdInfo), which is also GPL-licensed.
